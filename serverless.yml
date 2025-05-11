@@ -1,0 +1,134 @@
+service: template-serverless-cognito
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  architecture: arm64
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: cognito-idp:AdminGetUser
+          Resource: !GetAtt TemplateUserPool.Arn
+  environment:
+    COGNITO_CLIENT_ID: !Ref TemplateUserPoolClient
+    COGNITO_USER_POOL_ID: !Ref TemplateUserPool
+  httpApi:
+    authorizers:
+      CognitoAuthorizer:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl: !GetAtt TemplateUserPool.ProviderURL
+        audience:
+          - !Ref TemplateUserPoolClient
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: false
+    exclude:
+      - '@aws-sdk/*'
+
+functions:
+  cognitoCustomMessage:
+    handler: src/functions/cognitoCustomMessage.handler
+    events:
+      - cognitoUserPool:
+          pool: TemplateUserPool
+          trigger: CustomMessage
+          existing: true
+          forceDeploy: true
+  hello:
+    handler: src/functions/hello.handler
+    events:
+      - httpApi:
+          path: /
+          method: GET
+  signUp:
+    handler: src/functions/auth/signUp.handler
+    events:
+      - httpApi:
+          path: /auth/sign-up
+          method: POST
+  accountConfirmation:
+    handler: src/functions/auth/accountConfirmation.handler
+    events:
+      - httpApi:
+          path: /auth/account-confirmation
+          method: POST
+  signIn:
+    handler: src/functions/auth/signIn.handler
+    events:
+      - httpApi:
+          path: /auth/sign-in
+          method: POST
+  refreshToken:
+    handler: src/functions/auth/refreshToken.handler
+    events:
+      - httpApi:
+          path: /auth/refresh-token
+          method: POST
+  forgotPassword:
+    handler: src/functions/auth/forgotPassword.handler
+    events:
+      - httpApi:
+          path: /auth/forgot-password
+          method: POST
+  resetPassword:
+    handler: src/functions/auth/resetPassword.handler
+    events:
+      - httpApi:
+          path: /auth/reset-password
+          method: POST
+  profile:
+    handler: src/functions/profile.handler
+    events:
+      - httpApi:
+          path: /profile
+          method: GET
+          authorizer:
+            name: CognitoAuthorizer
+
+resources:
+    Resources:
+        TemplateUserPool:
+            Type: AWS::Cognito::UserPool
+            DeletionProtection: ACTIVE
+            Properties:
+                UserPoolName: TemplateUserPool
+            AdminCreateUserConfig:
+                AllowAdminCreateUserOnly: false
+            AccountRecoverySetting:
+              RecoveryMechanisms:
+                - Name: verified_email
+                  Priority: 1
+            MfaConfiguration: OFF
+            UsernameAttributes:
+                - email
+            AutoVerifiedAttributes:
+                - email
+            Schema:
+                - Name: email
+                  Required: true
+                  Mutable: true
+                - Name: given_name
+                  Required: true
+                  Mutable: true
+        TemplateUserPoolClient:
+            Type: AWS::Cognito::TemplateUserPoolClient
+            Properties:
+                ClientName: TemplateUserPoolClient
+                UserPoolId: !Ref TemplateUserPool
+                ExplicitAuthFlows:
+                    - ALLOW_USER_PASSWORD_AUTH
+                    - ALLOW_REFRESH_TOKEN_AUTH
+                TokenValidityUnits:
+                  AccessToken: hours
+                  RefreshToken: hours
+                AccessTokenValidity: 3
+                RefreshTokenValidity: 1440 # 60 days
