@@ -36,63 +36,70 @@ build:
 
 functions:
   cognitoCustomMessage:
-    handler: src/functions/cognitoCustomMessage.handler
+    handler: src/main/functions/cognitoCustomMessage.handler
     events:
       - cognitoUserPool:
           pool: TemplateUserPool
           trigger: CustomMessage
           existing: true
           forceDeploy: true
-  hello:
-    handler: src/functions/hello.handler
-    events:
-      - httpApi:
-          path: /
-          method: GET
+  ## /auth - START
   signUp:
-    handler: src/functions/auth/signUp.handler
+    handler: src/main/functions/auth/signUp.handler
     events:
       - httpApi:
           path: /auth/sign-up
           method: POST
   accountConfirmation:
-    handler: src/functions/auth/accountConfirmation.handler
+    handler: src/main/functions/auth/accountConfirmation.handler
     events:
       - httpApi:
           path: /auth/account-confirmation
           method: POST
   signIn:
-    handler: src/functions/auth/signIn.handler
+    handler: src/main/functions/auth/signIn.handler
     events:
       - httpApi:
           path: /auth/sign-in
           method: POST
   refreshToken:
-    handler: src/functions/auth/refreshToken.handler
+    handler: src/main/functions/auth/refreshToken.handler
     events:
       - httpApi:
           path: /auth/refresh-token
           method: POST
   forgotPassword:
-    handler: src/functions/auth/forgotPassword.handler
+    handler: src/main/functions/auth/forgotPassword.handler
     events:
       - httpApi:
           path: /auth/forgot-password
           method: POST
   resetPassword:
-    handler: src/functions/auth/resetPassword.handler
+    handler: src/main/functions/auth/resetPassword.handler
     events:
       - httpApi:
           path: /auth/reset-password
           method: POST
+  ## /auth - END
   profile:
-    handler: src/functions/profile.handler
+    handler: src/main/functions/profile.handler
     events:
       - httpApi:
           path: /profile
           method: GET
           authorizer:
             name: CognitoAuthorizer
+  ## /users - START
+  profile:
+  handler: src/main/functions/users/routes.handler
+  events:
+    - httpApi:
+        path: /users
+        method: ANY
+    - httpApi:
+        path: /users/{param+} # receive any route starting with /users, like /users/123/posts, /users/actives...
+        method: ANY
+  ## /users - END
 
 resources:
     Resources:

@@ -1,6 +1,4 @@
-export function bodyParser(body?: string) {
-    if (!body) return {}
-
+export function bodyParser(body: string) {
     try {
         return JSON.parse(body)
     } catch (error) {

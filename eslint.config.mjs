@@ -31,6 +31,7 @@ export default defineConfig([
                 "error",
                 "never"
             ],
+            "@typescript-eslint/no-explicit-any": "off"
         },
     },
 ])
