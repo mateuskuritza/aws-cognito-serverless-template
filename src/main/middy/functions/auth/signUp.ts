@@ -1,5 +1,5 @@
-import { makeHandler } from "../../middy/makeHandler"
-import { ISignUpController, SignUpController } from "../../../application/controllers/auth/SignUp"
+import { middyRouteAdapter } from "../../middyRouteAdapter"
+import { ISignUpController, SignUpController } from "../../../../application/controllers/auth/SignUp"
 import { z } from "zod"
 
 const signUpSchema = z.object({
@@ -13,4 +13,4 @@ signUpSchema._type satisfies ISignUpController
 
 type ISignUpSchema = z.infer<typeof signUpSchema>
 
-export const handler = makeHandler<ISignUpSchema>(new SignUpController(), signUpSchema)
+export const handler = middyRouteAdapter<ISignUpSchema>(new SignUpController(), signUpSchema)

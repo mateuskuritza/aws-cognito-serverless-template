@@ -6,9 +6,9 @@ import { errorHandler } from "./middlewares/errorHandler"
 import { validationHandler } from "./middlewares/validationHandler"
 import { z } from "zod"
 import { IController } from "../../application/types/IController"
-import { sanitizeEventObject } from "./utils/sanitizeEventObject"
+import { sanitizeObject } from "../../utils/sanitizeObject"
 
-export function makeHandler<RequestBody extends Record<string, unknown> | undefined = undefined>(controller: IController<RequestBody>, schema?: z.ZodType<RequestBody>) {
+export function middyRouteAdapter<RequestBody extends Record<string, unknown> | undefined = undefined>(controller: IController<RequestBody>, schema?: z.ZodType<RequestBody>) {
     return middy()
         .use(errorHandler())
         .use(httpBodyParser({
@@ -30,8 +30,8 @@ export function makeHandler<RequestBody extends Record<string, unknown> | undefi
         .handler(async (event) =>{
             return controller.handler({
                 body: event.body,
-                headers: sanitizeEventObject(event.headers),
-                params: sanitizeEventObject(event.pathParameters),
+                headers: sanitizeObject(event.headers),
+                params: sanitizeObject(event.pathParameters),
             })
         })
 }

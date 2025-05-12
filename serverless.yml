@@ -36,7 +36,7 @@ build:
 
 functions:
   cognitoCustomMessage:
-    handler: src/main/functions/cognitoCustomMessage.handler
+    handler: src/main/middy/functions/cognitoCustomMessage.handler
     events:
       - cognitoUserPool:
           pool: TemplateUserPool
@@ -45,44 +45,44 @@ functions:
           forceDeploy: true
   ## /auth - START
   signUp:
-    handler: src/main/functions/auth/signUp.handler
+    handler: src/main/middy/functions/auth/signUp.handler
     events:
       - httpApi:
           path: /auth/sign-up
           method: POST
   accountConfirmation:
-    handler: src/main/functions/auth/accountConfirmation.handler
+    handler: src/main/middy/functions/auth/accountConfirmation.handler
     events:
       - httpApi:
           path: /auth/account-confirmation
           method: POST
   signIn:
-    handler: src/main/functions/auth/signIn.handler
+    handler: src/main/middy/functions/auth/signIn.handler
     events:
       - httpApi:
           path: /auth/sign-in
           method: POST
   refreshToken:
-    handler: src/main/functions/auth/refreshToken.handler
+    handler: src/main/middy/functions/auth/refreshToken.handler
     events:
       - httpApi:
           path: /auth/refresh-token
           method: POST
   forgotPassword:
-    handler: src/main/functions/auth/forgotPassword.handler
+    handler: src/main/middy/functions/auth/forgotPassword.handler
     events:
       - httpApi:
           path: /auth/forgot-password
           method: POST
   resetPassword:
-    handler: src/main/functions/auth/resetPassword.handler
+    handler: src/main/middy/functions/auth/resetPassword.handler
     events:
       - httpApi:
           path: /auth/reset-password
           method: POST
   ## /auth - END
   profile:
-    handler: src/main/functions/profile.handler
+    handler: src/main/middy/functions/profile.handler
     events:
       - httpApi:
           path: /profile
@@ -91,7 +91,7 @@ functions:
             name: CognitoAuthorizer
   ## /users - START
   profile:
-  handler: src/main/functions/users/routes.handler
+  handler: src/main/middy/functions/users/routes.handler
   events:
     - httpApi:
         path: /users

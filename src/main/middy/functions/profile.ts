@@ -1,6 +1,6 @@
 import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResultV2 } from "aws-lambda"
 import { AdminGetUserCommand } from "@aws-sdk/client-cognito-identity-provider"
-import { cognitoClient } from "../../application/clients/cognitoClient"
+import { cognitoClient } from "../../../application/clients/cognitoClient"
 
 export async function handler(event: APIGatewayProxyEventV2WithJWTAuthorizer): Promise<APIGatewayProxyResultV2> {
     try {
